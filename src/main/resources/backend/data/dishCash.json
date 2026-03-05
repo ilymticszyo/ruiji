@@ -1,0 +1,9 @@
+{
+  "dishCategoryCash": [
+    { "value": 1048, "name": "徽菜" },
+    { "value": 735,  "name": "川菜" },
+    { "value": 580,  "name": "淮扬菜" },
+    { "value": 484,  "name": "粤菜" },
+    { "value": 300,  "name": "饮品" }
+  ]
+}

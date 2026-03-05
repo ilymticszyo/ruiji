@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+  <script src="../../js/echarts.js"></script>
+</head>
+<body>
+  <div class="dashboard-container"
+       id="order-app" >
+
+    <el-row>
+      <el-col :span="24">
+        <h2><em style="color: red">营业额分析：</em></h2>
+        <h3><em style="color: black">总营业额：{{total}}万元</em></h3>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-tag style="font-size: 20px;" type="success">各菜系营收占比分析：</el-tag>
+        <div id="dishCash" style="width: 600px;height:400px;">
+
+        </div>
+      </el-col>
+      <el-col :span="12">
+        <el-tag style="font-size: 20px;" type="success">各套餐营收占比分析：</el-tag>
+        <div id="setmealCash" style="width: 600px;height:400px;"></div>
+      </el-col>
+    </el-row>
+
+
+    <el-row>
+      <el-col :span="24">
+        <h2><em style="color: red">菜系/套餐销量占比分析：</em></h2>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="12">
+        <el-tag style="font-size: 20px;" type="success">菜系销量占比分析：</el-tag>
+        <div id="dishNum" style="width: 600px;height:400px;">
+
+        </div>
+      </el-col>
+      <el-col :span="12">
+        <el-tag style="font-size: 20px;" type="success">套餐销量占比分析：</el-tag>
+        <div id="setmealNum" style="width: 600px;height:400px;">
+
+        </div>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="24">
+        <h2><em style="color: red">近一年月收入趋势图【单位：万元】</em></h2>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="24">
+        <div id="cashPerMonth" style="width: 1200px;height:400px;">
+
+        </div>
+      </el-col>
+    </el-row>
+
+
+
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/order.js"></script>
+    <script>
+      new Vue({
+        el: '#order-app',
+        data() {
+          return {
+            total:100
+          }
+        },
+        computed: {},
+        created() {
+
+        },
+        mounted() {
+
+          //菜系营收占比分析 /statics/dishCash
+          axios.get('/statics/dishCash').then(function (res) {
+            // 基于准备好的dom，初始化echarts实例
+            var dishCash = echarts.init(document.getElementById('dishCash'));
+            // 指定图表的配置项和数据
+            var dishCashOption =  {
+              title: {
+                text: '菜系营收分析',
+                subtext: '菜系',
+                left: 'center'
+              },
+              tooltip: {
+                trigger: 'item'
+              },
+              legend: {
+                orient: 'vertical',
+                left: 'left'
+              },
+              series: [
+                {
+                  name: 'Access From',
+                  type: 'pie',
+                  radius: '50%',
+                  data: res.data,
+                  //[
+              //   { "value": 1048, "name": "徽菜" },
+              //   { "value": 735,  "name": "川菜" },
+              //   { "value": 580,  "name": "淮扬菜" },
+              //   { "value": 484,  "name": "粤菜" },
+              //   { "value": 300,  "name": "饮品" }
+              // ]
+                  emphasis: {
+                    itemStyle: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                  }
+                }
+              ]
+            };
+            // 使用刚指定的配置项和数据显示图表。
+            dishCash.setOption(dishCashOption);
+          });
+
+
+          //套餐营收占比分析 /statics/setmealCash
+          axios.get('/statics/setmealCash').then(function (res) {
+            // 基于准备好的dom，初始化echarts实例
+            var setmealCash = echarts.init(document.getElementById('setmealCash'));
+            // 指定图表的配置项和数据
+            var setmealCashOption =  {
+              title: {
+                text: '套餐营收分析',
+                subtext: '套餐',
+                left: 'center'
+              },
+              tooltip: {
+                trigger: 'item'
+              },
+              legend: {
+                orient: 'vertical',
+                left: 'left'
+              },
+              series: [
+                {
+                  name: 'Access From',
+                  type: 'pie',
+                  radius: '50%',
+                  data: res.data,
+                  emphasis: {
+                    itemStyle: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                  }
+                }
+              ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            setmealCash.setOption(setmealCashOption);
+          });
+
+
+          //菜系销量占比分析 /statics/dishNum
+          axios.get('/statics/dishNum').then(function (res) {
+            // 基于准备好的dom，初始化echarts实例
+            var dishNum = echarts.init(document.getElementById('dishNum'));
+            // 指定图表的配置项和数据
+            var dishNumOption =  {
+              tooltip: {
+                trigger: 'item'
+              },
+              legend: {
+                top: '5%',
+                left: 'center'
+              },
+              series: [
+                {
+                  name: 'Access From',
+                  type: 'pie',
+                  radius: ['40%', '70%'],
+                  avoidLabelOverlap: false,
+                  itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                  },
+                  label: {
+                    show: false,
+                    position: 'center'
+                  },
+                  emphasis: {
+                    label: {
+                      show: true,
+                      fontSize: '40',
+                      fontWeight: 'bold'
+                    }
+                  },
+                  labelLine: {
+                    show: false
+                  },
+                  data: res.data
+                }
+              ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            dishNum.setOption(dishNumOption);
+          });
+
+          //套餐销量占比分析 /statics/setmealNum
+          axios.get('/statics/setmealNum').then(function (res) {
+            // 基于准备好的dom，初始化echarts实例
+            var setmealNum = echarts.init(document.getElementById('setmealNum'));
+            // 指定图表的配置项和数据
+            var setmealNumOption =  {
+              tooltip: {
+                trigger: 'item'
+              },
+              legend: {
+                top: '5%',
+                left: 'center'
+              },
+              series: [
+                {
+                  name: 'Access From',
+                  type: 'pie',
+                  radius: ['40%', '70%'],
+                  avoidLabelOverlap: false,
+                  itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                  },
+                  label: {
+                    show: false,
+                    position: 'center'
+                  },
+                  emphasis: {
+                    label: {
+                      show: true,
+                      fontSize: '40',
+                      fontWeight: 'bold'
+                    }
+                  },
+                  labelLine: {
+                    show: false
+                  },
+                  data: res.data
+                }
+              ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            setmealNum.setOption(setmealNumOption);
+          });
+
+          //月营业额趋势图 /statics/cashPerMonth
+          axios.get('/statics/cashPerMonth').then(function (res) {
+            // 基于准备好的dom，初始化echarts实例
+            var cashPerMonth = echarts.init(document.getElementById('cashPerMonth'));
+            // 指定图表的配置项和数据
+            var cashPerMonthOption =   {
+              xAxis: {
+                type: 'category',
+                data: res.data.month
+              },
+              yAxis: {
+                type: 'value'
+              },
+              series: [
+                {
+                  data: res.data.price,
+                  type: 'line'
+                }
+              ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            cashPerMonth.setOption(cashPerMonthOption);
+          });
+
+        },
+
+
+        methods: {
+
+
+
+        }
+      })
+    </script>
+</body>
+</html>
