@@ -56,10 +56,11 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- MyBatis-Plus：Spring Boot 3 专用 starter -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.2</version>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.6</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping("/Employee")
+@RequestMapping("/employee")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping
+    @PostMapping("/login")
     public Res<Employee> login(HttpServletRequest request, @RequestBody Employee employee) {
         /*
         1、将页面提交的密码password进行md5加密处理
@@ -32,11 +32,12 @@ public class EmployeeController {
 5、查看员工状态，如果为已禁用状态，则返回员工已禁用结果
 6、登录成功，将员工id存入Session并返回登录成功结果
          */
+        try {
         String password = employee.getPassword();
         password = DigestUtils.md5DigestAsHex(password.getBytes());
-        String userName = employee.getName();
+        String userName = employee.getUsername();
         LambdaQueryWrapper<Employee> employeeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        employeeLambdaQueryWrapper.eq(Employee::getName, userName);
+        employeeLambdaQueryWrapper.eq(Employee::getUsername, userName);
         Employee one = employeeService.getOne(employeeLambdaQueryWrapper);
         if (one == null) {
             return Res.error("不存在该用户");
@@ -49,6 +50,9 @@ public class EmployeeController {
         }
         request.getSession().setAttribute("employee", employee.getId());
         return Res.success(employee);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
