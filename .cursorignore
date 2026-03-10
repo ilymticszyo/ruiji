@@ -1,0 +1,21 @@
+target/
+build/
+out/
+
+# IDE / tooling
+.idea/
+.vscode/
+*.iml
+
+# Logs & temp
+logs/
+*.log
+tmp/
+.tmp/
+
+# OS / misc
+.DS_Store
+Thumbs.db
+
+# Maven wrapper cache (if generated)
+.mvn/wrapper/*
