@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @Slf4j
 @RequestMapping("/employee")
@@ -48,11 +50,35 @@ public class EmployeeController {
         if (one.getId() != 1) {
             return Res.error("该员工账号未启用");
         }
-        request.getSession().setAttribute("employee", employee.getId());
-        return Res.success(employee);
+        request.getSession().setAttribute("employee", one.getId());
+        return Res.success(one);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+@PostMapping("/logout")
+    public Res<String> logout(HttpServletRequest request) {
+        request.getSession().removeAttribute("employee");
+        return Res.success("退出成功");
+    }
+
+    @PostMapping
+    public Res<String> save(HttpServletRequest request,@RequestBody Employee employee){
+        log.info("新增员工，员工信息为：{}",employee.toString());
+
+
+        //为员工设置初始密码
+        String password = "123456";
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
+        employee.setPassword(password);
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setCreateUser((Long) request.getSession().getAttribute("employee"));
+        employee.setUpdateUser((Long) request.getSession().getAttribute("employee"));
+        boolean save = employeeService.save(employee);
+        return  save?Res.success("新增员工成功"):Res.error("新增员工失败");
+    }
+
 
 }
