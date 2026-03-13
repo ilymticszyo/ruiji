@@ -1,6 +1,7 @@
 package com.example.ruiji.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.ruiji.common.Res;
 import com.example.ruiji.pojo.Employee;
 import com.example.ruiji.service.EmployeeService;
@@ -9,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -80,5 +78,32 @@ public class EmployeeController {
         return  save?Res.success("新增员工成功"):Res.error("新增员工失败");
     }
 
+    @GetMapping("/page")
+    public Res<Page> pageQuery(int page,int pageSize,String name){
+       //构建分页构造器
+        Page<Employee> pageInfo = new Page<>(page,pageSize);
+        //构造条件构造器
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(name != null,Employee::getName,name);
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+        //执行查询
+        employeeService.page(pageInfo,queryWrapper);
+        return Res.success(pageInfo);
+     }
+
+     @PutMapping
+    public Res<String> userUpdate(HttpServletRequest request,@RequestBody Employee employee){
+        employee.setUpdateUser((Long)request.getSession().getAttribute("employee"));
+        employee.setUpdateTime(LocalDateTime.now());
+        employeeService.updateById(employee);
+
+        return Res.success("修改员工信息成功");
+     }
+
+     @GetMapping("/{id}")
+    public Res<Employee> getById(@PathVariable  Long id){
+         Employee byId = employeeService.getById(id);
+         return Res.success(byId);
+     }
 
 }
