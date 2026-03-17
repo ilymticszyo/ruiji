@@ -1,6 +1,7 @@
 package com.example.ruiji.filter;
 
 import com.alibaba.fastjson.JSON;
+import com.example.ruiji.common.BaseContext;
 import com.example.ruiji.common.Res;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
@@ -51,9 +52,12 @@ public class LoginCheckFilter implements Filter {
         // 4、判断登录状态，如果已登录，则直接放行
         Object employee = httpRequest.getSession().getAttribute("employee");
         if (employee != null) {
+            // 将当前登录用户id存入ThreadLocal
+            BaseContext.setCurrentId((Long) employee);
             chain.doFilter(request, response);
             return;
         }
+        
 
         // 5、如果未登录则返回未登录结果
         if (PATH_MATCHER.match("/employee/**", requestURI)) {

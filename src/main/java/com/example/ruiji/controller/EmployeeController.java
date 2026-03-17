@@ -8,7 +8,6 @@ import com.example.ruiji.service.EmployeeService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,7 +61,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public Res<String> save(HttpServletRequest request,@RequestBody Employee employee){
+    public Res<String> save(@RequestBody Employee employee){
         log.info("新增员工，员工信息为：{}",employee.toString());
 
 
@@ -70,10 +69,10 @@ public class EmployeeController {
         String password = "123456";
         password = DigestUtils.md5DigestAsHex(password.getBytes());
         employee.setPassword(password);
-        employee.setCreateTime(LocalDateTime.now());
+       /* employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
         employee.setCreateUser((Long) request.getSession().getAttribute("employee"));
-        employee.setUpdateUser((Long) request.getSession().getAttribute("employee"));
+        employee.setUpdateUser((Long) request.getSession().getAttribute("employee"));*/
         boolean save = employeeService.save(employee);
         return  save?Res.success("新增员工成功"):Res.error("新增员工失败");
     }
