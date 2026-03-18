@@ -3,6 +3,7 @@ package com.example.ruiji.controller;
 
 import com.example.ruiji.common.Res;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/common")
+@Slf4j
 public class CommonController {
 
     @Value("${ruiji.path}")
@@ -36,11 +38,13 @@ public class CommonController {
 
         try {
             if (originalFilename != null) {
+                log.info("上传地址为{}",new File(basePath + uuid + originalFilename.substring(originalFilename.lastIndexOf("."))));
                 file.transferTo(new File(basePath + uuid + originalFilename.substring(originalFilename.lastIndexOf("."))));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        log.info("返回文件名字为：{}",file.getOriginalFilename());
         return Res.success(file.getOriginalFilename());
     }
 
@@ -55,7 +59,8 @@ public class CommonController {
         }
 
         response.setContentType("image/jpeg");
-        try (InputStream inputStream = new FileInputStream(file); OutputStream outputStream = response.getOutputStream()) {
+        log.info("去下载的地址为：{}",basePath+name);
+        try (InputStream inputStream = new FileInputStream(new File(basePath+name)); OutputStream outputStream = response.getOutputStream()) {
             byte[] buffer = new byte[1024];
             int len;
             while ((len = inputStream.read(buffer)) != -1) {
