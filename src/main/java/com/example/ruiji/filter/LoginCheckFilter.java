@@ -22,6 +22,10 @@ public class LoginCheckFilter implements Filter {
     private static final String[] NO_NEED_PATHS = {
             "/employee/login",
             "/employee/logout",
+            // 前端“用户登录态”相关接口：验证码/登录本身需要放行
+            "/user/login",
+            "/user/sendMsg",
+            "/user/loginout",
             "/backend/page/login/login.html",
             "/backend/plugins/**",
             "/backend/styles/**",
@@ -39,6 +43,11 @@ public class LoginCheckFilter implements Filter {
 
         // 1、获取本次请求的URI
         String requestURI = httpRequest.getRequestURI();
+        if (requestURI == null) {
+            // 理论上不会出现 null；这里做保护，避免匹配器/判空的类型安全告警
+            chain.doFilter(request, response);
+            return;
+        }
         log.info("拦截到请求: {}", requestURI);
 
         // 2、判断本次请求是否需要处理
@@ -57,17 +66,44 @@ public class LoginCheckFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        
 
-        // 5、如果未登录则返回未登录结果
+        // 5、如果未登录员工，则尝试使用前端用户登录态（session 中存入 phone）
+        Object phone = httpRequest.getSession().getAttribute("phone");
+        if (phone != null) {
+            // 前端用户仅允许查询类请求，避免把后台管理的写操作暴露出来
+            String method = httpRequest.getMethod();
+            boolean isQueryRequest = method != null && ("GET".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method));
+            if (!isQueryRequest) {
+                httpResponse.setContentType("application/json;charset=utf-8");
+                httpResponse.getWriter().write(JSON.toJSONString(Res.error("NOTLOGIN")));
+                return;
+            }
+            // 可选：如果前面也写了 userId，则继续为 MyBatis-Plus 的审计字段提供 currentId
+            Object userId = httpRequest.getSession().getAttribute("userId");
+            if (userId instanceof Long) {
+                BaseContext.setCurrentId((Long) userId);
+            }
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // 6、如果仍未登录，则返回未登录结果
         if (PATH_MATCHER.match("/employee/**", requestURI)) {
-            // 接口请求：返回 JSON 格式的未登录结果（前端 request.js 会拦截 NOTLOGIN 并跳转登录页）
+            // 员工接口请求：返回 JSON 格式的未登录结果
             httpResponse.setContentType("application/json;charset=utf-8");
             httpResponse.getWriter().write(JSON.toJSONString(Res.error("NOTLOGIN")));
-        } else {
-            // 页面请求：重定向到登录页
-            httpResponse.sendRedirect("/backend/page/login/login.html");
+            return;
         }
+
+        // 后台页面请求：重定向到后台登录页
+        if (requestURI != null && requestURI.startsWith("/backend/page/")) {
+            httpResponse.sendRedirect("/backend/page/login/login.html");
+            return;
+        }
+
+        // 前端 API 请求：返回 JSON（前端 request.js 会拦截 NOTLOGIN 并跳转到前端登录页）
+        httpResponse.setContentType("application/json;charset=utf-8");
+        httpResponse.getWriter().write(JSON.toJSONString(Res.error("NOTLOGIN")));
     }
 
     /**
@@ -75,8 +111,15 @@ public class LoginCheckFilter implements Filter {
      * 使用 AntPathMatcher 进行通配符匹配
      */
     private boolean checkPathNoNeedProcess(String requestURI) {
+        if (requestURI == null) {
+            return false;
+        }
+        String safeRequestURI = requestURI;
         for (String pattern : NO_NEED_PATHS) {
-            if (PATH_MATCHER.match(pattern, requestURI)) {
+            if (pattern == null) {
+                continue;
+            }
+            if (PATH_MATCHER.match(pattern, safeRequestURI)) {
                 return true;
             }
         }
