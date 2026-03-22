@@ -53,4 +53,12 @@ public class Setmeal implements Serializable {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUser;
 
+    /**
+     * 逻辑删除标记：0 未删除，1 已删除
+     * <p>
+     * 与现有 `Dish#isDeleted` 保持一致，这里不参与查询结果返回。
+     */
+    @TableField(select = false)
+    private int isDeleted;
+
 }

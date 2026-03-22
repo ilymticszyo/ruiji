@@ -7,12 +7,15 @@ import com.example.ruiji.common.Res;
 import com.example.ruiji.dto.DishDto;
 import com.example.ruiji.pojo.Category;
 import com.example.ruiji.pojo.Dish;
+import com.example.ruiji.pojo.DishFlavor;
 import com.example.ruiji.service.CategoryService;
+import com.example.ruiji.service.DishFlavorService;
 import com.example.ruiji.service.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +39,9 @@ public class DishController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private DishFlavorService dishFlavorService;
 
     /**
      * 菜品分页查询
@@ -95,6 +101,70 @@ public class DishController {
 
         dtoPage.setRecords(dtoRecords);
         return Res.success(dtoPage);
+    }
+
+    /**
+     * 前台：按分类查询菜品列表
+     * 对应接口：GET /dish/list?categoryId=xx&status=1
+     *
+     * @param dish 菜品查询条件（只关心 categoryId、status）
+     * @return 菜品列表（包含口味信息）
+     */
+    @GetMapping("/list")
+    public Res<List<DishDto>> list(Dish dish) {
+        LambdaQueryWrapper<Dish> qw = new LambdaQueryWrapper<>();
+        if (dish != null && dish.getCategoryId() != null) {
+            qw.eq(Dish::getCategoryId, dish.getCategoryId());
+        }
+        if (dish != null && dish.getStatus() != null) {
+            qw.eq(Dish::getStatus, dish.getStatus());
+        }
+        qw.eq(Dish::getIsDeleted, 0)
+                .orderByAsc(Dish::getSort)
+                .orderByDesc(Dish::getUpdateTime);
+
+        List<Dish> dishes = dishService.list(qw);
+        if (dishes == null || dishes.isEmpty()) {
+            return Res.success(List.of());
+        }
+
+        List<Long> dishIds = dishes.stream()
+                .filter(Objects::nonNull)
+                .map(Dish::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        Map<Long, List<DishFlavor>> flavorMap;
+        if (dishIds.isEmpty()) {
+            flavorMap = Map.of();
+        } else {
+            LambdaQueryWrapper<DishFlavor> fq = new LambdaQueryWrapper<>();
+            fq.in(DishFlavor::getDishId, dishIds)
+                    .eq(DishFlavor::getIsDeleted, 0);
+            flavorMap = dishFlavorService.list(fq).stream()
+                    .filter(Objects::nonNull)
+                    .filter(f -> f.getDishId() != null)
+                    .collect(Collectors.groupingBy(DishFlavor::getDishId));
+        }
+
+        String categoryName = null;
+        if (dish != null && dish.getCategoryId() != null) {
+            Category category = categoryService.getById(dish.getCategoryId());
+            categoryName = category == null ? null : category.getName();
+        }
+
+        List<DishDto> result = new ArrayList<>(dishes.size());
+        for (Dish d : dishes) {
+            if (d == null) {
+                continue;
+            }
+            DishDto dto = new DishDto();
+            BeanUtils.copyProperties(d, dto);
+            dto.setCategoryName(categoryName);
+            dto.setFlavors(flavorMap.getOrDefault(d.getId(), List.of()));
+            result.add(dto);
+        }
+        return Res.success(result);
     }
 
     /**

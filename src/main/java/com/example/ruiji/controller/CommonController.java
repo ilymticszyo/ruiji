@@ -38,14 +38,17 @@ public class CommonController {
 
         try {
             if (originalFilename != null) {
-                log.info("上传地址为{}",new File(basePath + uuid + originalFilename.substring(originalFilename.lastIndexOf("."))));
-                file.transferTo(new File(basePath + uuid + originalFilename.substring(originalFilename.lastIndexOf("."))));
+                String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+                String fileName = uuid + suffix;
+                log.info("上传地址为{}", new File(basePath + fileName));
+                file.transferTo(new File(basePath + fileName));
+                log.info("返回文件名字为：{}", fileName);
+                return Res.success(fileName);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("返回文件名字为：{}",file.getOriginalFilename());
-        return Res.success(file.getOriginalFilename());
+        throw new IllegalArgumentException("文件名不能为空");
     }
 
     @GetMapping("/download")
