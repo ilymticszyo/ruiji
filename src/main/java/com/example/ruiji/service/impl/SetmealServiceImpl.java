@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * 套餐服务实现
  *
- * @author lizhiwei
+ * @author ocx
  */
 @Service
 public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> implements SetmealService {

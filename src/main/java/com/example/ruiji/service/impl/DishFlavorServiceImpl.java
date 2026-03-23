@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 /**
  * 菜品口味服务实现
  *
- * @author lizhiwei
+ * @author ocx
  */
 @Service
 public class DishFlavorServiceImpl extends ServiceImpl<DishFlavorMapper, DishFlavor> implements DishFlavorService {

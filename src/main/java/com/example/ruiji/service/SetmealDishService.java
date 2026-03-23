@@ -6,7 +6,7 @@ import com.example.ruiji.pojo.SetmealDish;
 /**
  * 套餐菜品关系服务接口
  *
- * @author lizhiwei
+ * @author ocx
  */
 public interface SetmealDishService extends IService<SetmealDish> {
 }

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 套餐服务接口
  *
- * @author lizhiwei
+ * @author ocx
  */
 public interface SetmealService extends IService<Setmeal> {
 

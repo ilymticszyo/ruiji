@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * 参考 Employee 和 Category 的风格，
  * 提供分页查询、新增、修改、删除等基础能力。
  *
- * @author lizhiwei
+ * @author ocx
  */
 @RestController
 @RequestMapping("/dish")

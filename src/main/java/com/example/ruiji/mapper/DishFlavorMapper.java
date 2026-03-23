@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 菜品口味 Mapper
  *
- * @author lizhiwei
+ * @author ocx
  */
 @Mapper
 public interface DishFlavorMapper extends BaseMapper<DishFlavor> {

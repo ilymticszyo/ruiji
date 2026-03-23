@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * 菜品服务实现
  *
- * @author lizhiwei
+ * @author ocx
  */
 @Service
 public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements DishService {

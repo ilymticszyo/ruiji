@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 菜品分页展示 DTO
  *
- * @author lizhiwei
+ * @author ocx
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

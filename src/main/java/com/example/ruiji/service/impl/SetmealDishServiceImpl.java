@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 /**
  * 套餐菜品关系服务实现
  *
- * @author lizhiwei
+ * @author ocx
  */
 @Service
 public class SetmealDishServiceImpl extends ServiceImpl<SetmealDishMapper, SetmealDish> implements SetmealDishService {

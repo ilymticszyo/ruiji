@@ -6,7 +6,7 @@ import com.example.ruiji.pojo.DishFlavor;
 /**
  * 菜品口味服务接口
  *
- * @author lizhiwei
+ * @author ocx
  */
 public interface DishFlavorService extends IService<DishFlavor> {
 }

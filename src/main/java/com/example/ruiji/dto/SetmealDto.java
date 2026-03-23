@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 套餐展示/保存 DTO
  *
- * @author lizhiwei
+ * @author ocx
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

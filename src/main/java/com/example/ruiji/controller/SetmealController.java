@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * - GET  /setmeal/list?categoryId=xx&status=1
  * - GET  /setmeal/dish/{id}
  *
- * @author lizhiwei
+ * @author ocx
  */
 @RestController
 @RequestMapping("/setmeal")

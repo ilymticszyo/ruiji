@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 套餐菜品关系 Mapper
  *
- * @author lizhiwei
+ * @author ocx
  */
 @Mapper
 public interface SetmealDishMapper extends BaseMapper<SetmealDish> {

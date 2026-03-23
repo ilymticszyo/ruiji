@@ -1,16 +1,10 @@
 package com.example.ruiji.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.ruiji.pojo.Dish;
+import com.example.ruiji.pojo.ShoppingCart;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * 菜品 Mapper
- *
- * @author ocx
- */
 @Mapper
-public interface DishMapper extends BaseMapper<Dish> {
-
+public interface ShoppingCartMapper  extends BaseMapper<ShoppingCart>
+{
 }
-

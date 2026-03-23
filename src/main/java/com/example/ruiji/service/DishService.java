@@ -7,7 +7,7 @@ import com.example.ruiji.pojo.Dish;
 /**
  * 菜品服务接口
  *
- * @author lizhiwei
+ * @author ocx
  */
 public interface DishService extends IService<Dish> {
 

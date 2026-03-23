@@ -42,7 +42,7 @@ public class AddressBookController {
         }
         LambdaUpdateWrapper<AddressBook> qw = new LambdaUpdateWrapper<>();
         // set is_default = 0
-        qw.set(AddressBook::getIsDefault,0);
+        qw.set(AddressBook::getIsDefault,1);
         qw.eq(AddressBook::getUserId,user);// where user_id =?
         addressBookService.update(qw);
         LambdaQueryWrapper<AddressBook> aqw = new LambdaQueryWrapper<>();

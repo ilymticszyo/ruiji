@@ -116,6 +116,7 @@
             </div>
           </div>
           <div class="divCartContent">
+
             <div v-for="item in cartData" :key="item.id" class="divCartItem">
               <el-image :src="imgPathConvert(item.image)" >
                 <div slot="error" class="image-slot">
@@ -131,7 +132,7 @@
                 <div class="divSubtract">
                   <img src="./images/subtract.png" @click="cartNumberSubtract(item)"/>
                 </div>
-                <div class="divDishNum">{{item.number}}</div>
+                <div class="divDishNum" style="font-size: 15rem" >{{item.number}}</div>
                 <div class="divAdd">
                   <img src="./images/add.png" @click="cartNumAdd(item)"/>
                 </div>
