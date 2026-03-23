@@ -36,7 +36,7 @@ public class AddressBookController {
     //设置默认地址
     @PutMapping("/default")
     public Res<String> setDefault(@RequestBody AddressBook addressBook,HttpSession session){
-        Long user = (Long) session.getAttribute("user");
+        Long user = (Long) session.getAttribute("userId");
         LambdaUpdateWrapper<AddressBook> qw = new LambdaUpdateWrapper<>();
         // set is_default = 0
         qw.set(AddressBook::getIsDefault,0);
