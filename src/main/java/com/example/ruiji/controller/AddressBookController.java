@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.ruiji.common.Res;
 import com.example.ruiji.pojo.AddressBook;
 import com.example.ruiji.service.AddressBookService;
-import com.example.ruiji.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +18,15 @@ import java.util.List;
 public class AddressBookController {
     @Autowired
     private AddressBookService addressBookService;
-    @Autowired
-    private UserService userService;
 
 
     //新增地址   记得关联session中存的用户信息
     @PostMapping
     public Res<String> add(@RequestBody AddressBook addressBook, HttpSession session){
         Long uId = (Long) session.getAttribute("user");
+        if (uId == null) {
+            return Res.error("用户未登录");
+        }
         addressBook.setUserId(uId);
         addressBookService.save(addressBook);
         return Res.success("保存地址成功");
@@ -36,7 +36,10 @@ public class AddressBookController {
     //设置默认地址
     @PutMapping("/default")
     public Res<String> setDefault(@RequestBody AddressBook addressBook,HttpSession session){
-        Long user = (Long) session.getAttribute("userId");
+        Long user = (Long) session.getAttribute("user");
+        if (user == null) {
+            return Res.error("用户未登录");
+        }
         LambdaUpdateWrapper<AddressBook> qw = new LambdaUpdateWrapper<>();
         // set is_default = 0
         qw.set(AddressBook::getIsDefault,0);

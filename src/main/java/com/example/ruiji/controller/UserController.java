@@ -61,12 +61,11 @@ public class UserController {
                 one.setPhone(phone);
                userService.save(one);
             }
-            // 登录成功后，把前端“用户登录态”写入 Session
-            // 供 LoginCheckFilter 识别，从而允许前端访问 /category 等业务接口
-            session.setAttribute("phone", phone);
+            // 登录成功后，保存前端用户 id 到 session，供业务接口与过滤器统一识别
             if (one.getId() != null) {
-                session.setAttribute("userId", one.getId());
+                session.setAttribute("user", one.getId());
             }
+            session.setAttribute("phone", phone);
             return Res.success(one);
         }
         return Res.error("登陆失败");
@@ -74,6 +73,7 @@ public class UserController {
 
     @PostMapping("/loginout")
     public Res<String> loginout(HttpSession session){
+        session.removeAttribute("user");
         session.removeAttribute("phone");
         return Res.success("退出登录成功");
     }

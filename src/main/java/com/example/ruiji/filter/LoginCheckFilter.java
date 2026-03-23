@@ -67,22 +67,10 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
-        // 5、如果未登录员工，则尝试使用前端用户登录态（session 中存入 phone）
-        Object phone = httpRequest.getSession().getAttribute("phone");
-        if (phone != null) {
-            // 前端用户仅允许查询类请求，避免把后台管理的写操作暴露出来
-            String method = httpRequest.getMethod();
-            boolean isQueryRequest = method != null && ("GET".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method));
-            if (!isQueryRequest) {
-                httpResponse.setContentType("application/json;charset=utf-8");
-                httpResponse.getWriter().write(JSON.toJSONString(Res.error("NOTLOGIN")));
-                return;
-            }
-            // 可选：如果前面也写了 userId，则继续为 MyBatis-Plus 的审计字段提供 currentId
-            Object userId = httpRequest.getSession().getAttribute("userId");
-            if (userId instanceof Long) {
-                BaseContext.setCurrentId((Long) userId);
-            }
+        // 5、如果未登录员工，则尝试使用前端用户登录态（session 中存入 user）
+        Object user = httpRequest.getSession().getAttribute("user");
+        if (user instanceof Long) {
+            BaseContext.setCurrentId((Long) user);
             chain.doFilter(request, response);
             return;
         }
