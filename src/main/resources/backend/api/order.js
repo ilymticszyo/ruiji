@@ -23,3 +23,51 @@ const editOrderDetail = (params) => {
     data: { ...params }
   })
 }
+
+// 统计分析-总营业额
+const getStaticsTotal = () => {
+  return $axios({
+    url: '/statics/total',
+    method: 'get'
+  })
+}
+
+// 统计分析-菜系营收占比
+const getDishCash = () => {
+  return $axios({
+    url: '/statics/dishCash',
+    method: 'get'
+  })
+}
+
+// 统计分析-套餐营收占比
+const getSetmealCash = () => {
+  return $axios({
+    url: '/statics/setmealCash',
+    method: 'get'
+  })
+}
+
+// 统计分析-菜系销量占比
+const getDishNum = () => {
+  return $axios({
+    url: '/statics/dishNum',
+    method: 'get'
+  })
+}
+
+// 统计分析-套餐销量占比
+const getSetmealNum = () => {
+  return $axios({
+    url: '/statics/setmealNum',
+    method: 'get'
+  })
+}
+
+// 统计分析-近一年月营业额
+const getCashPerMonth = () => {
+  return $axios({
+    url: '/statics/cashPerMonth',
+    method: 'get'
+  })
+}

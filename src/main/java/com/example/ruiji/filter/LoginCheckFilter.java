@@ -19,23 +19,7 @@ public class LoginCheckFilter implements Filter {
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
     /** 不需要登录校验的路径（Ant 风格通配符） */
-    private static final String[] NO_NEED_PATHS = {
-            "/employee/login",
-            "/employee/logout",
-            // 前端“用户登录态”相关接口：验证码/登录本身需要放行
-            "/user/login",
-            "/user/sendMsg",
-            "/user/loginout",
-            "/backend/page/login/login.html",
-            "/backend/plugins/**",
-            "/backend/styles/**",
-            "/backend/js/**",
-            "/backend/api/**",
-            "/backend/images/**",
-            "/backend/data/**",
-            "/backend/favicon.ico",
-            "/front/**"
-    };
+    private static final String[] NO_NEED_PATHS = {"/employee/login", "/employee/logout", "/backend/**", "/front/**","/user/login","/user/sendMsg"};
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;

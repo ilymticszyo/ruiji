@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.ruiji.common.BaseContext;
 import com.example.ruiji.common.Res;
+import com.example.ruiji.dto.DishDto;
 import com.example.ruiji.dto.OrdersDto;
 import com.example.ruiji.pojo.OrderDetail;
 import com.example.ruiji.pojo.Orders;
@@ -12,12 +13,7 @@ import com.example.ruiji.service.OrdersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +36,7 @@ public class OrdersController {
 
 
     @PostMapping("/submit")
-    public Res<String> submit(@RequestBody Orders orders){
+    public Res<String> submit(@RequestBody Orders orders) {
 
         ordersService.submit(orders);
         return Res.success("下单完成");
@@ -49,13 +45,13 @@ public class OrdersController {
     /**
      * 用户端分页查询订单
      *
-     * @param page 页码
+     * @param page     页码
      * @param pageSize 每页条数
      * @return 订单分页数据
      * @author lizhiwei
      */
     @GetMapping("/userPage")
-    public Res<Page<OrdersDto>> userPage(@RequestParam Integer page, @RequestParam Integer pageSize){
+    public Res<Page<OrdersDto>> userPage(@RequestParam Integer page, @RequestParam Integer pageSize) {
         if (page == null || page < 1 || pageSize == null || pageSize < 1) {
             return Res.error("分页参数不合法");
         }
@@ -115,5 +111,25 @@ public class OrdersController {
         ordersService.again(orders);
         return Res.success("再来一单成功");
     }
-    
+
+    @GetMapping("/page")
+    public Res<Page> page(@RequestParam Integer page, @RequestParam Integer pageSize,@RequestParam(required = false) String number) {
+        Page<Orders> orderPage = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Orders> objectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        objectLambdaQueryWrapper.like(number != null,Orders::getNumber,number);
+        ordersService.page(orderPage,objectLambdaQueryWrapper);
+        
+
+        return Res.success(orderPage);
+    }
+
+
+    @PutMapping
+    public Res<String> put(@RequestBody Orders orders){
+        Long id = orders.getId();
+        LambdaQueryWrapper<Orders> objectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        objectLambdaQueryWrapper.eq(Orders::getId,id);
+        ordersService.updateById(orders);
+        return Res.success("派送成功");
+    }
 }

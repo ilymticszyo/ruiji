@@ -87,7 +87,7 @@
         el: '#order-app',
         data() {
           return {
-            total:100
+            total: 0
           }
         },
         computed: {},
@@ -95,9 +95,19 @@
 
         },
         mounted() {
+          const vm = this
+          getStaticsTotal().then((res) => {
+            if (res && res.code === 1 && res.data !== null && res.data !== undefined) {
+              vm.total = vm.toNumber(res.data)
+            }
+          })
 
           //菜系营收占比分析 /statics/dishCash
-          axios.get('/statics/dishCash').then(function (res) {
+          getDishCash().then(function (res) {
+            if (!res || res.code !== 1 || !Array.isArray(res.data)) {
+              return
+            }
+            var dishCashData = vm.normalizePieData(res.data)
             // 基于准备好的dom，初始化echarts实例
             var dishCash = echarts.init(document.getElementById('dishCash'));
             // 指定图表的配置项和数据
@@ -119,7 +129,7 @@
                   name: 'Access From',
                   type: 'pie',
                   radius: '50%',
-                  data: res.data,
+                  data: dishCashData,
                   //[
               //   { "value": 1048, "name": "徽菜" },
               //   { "value": 735,  "name": "川菜" },
@@ -138,12 +148,20 @@
               ]
             };
             // 使用刚指定的配置项和数据显示图表。
-            dishCash.setOption(dishCashOption);
+            try {
+              dishCash.setOption(dishCashOption);
+            } catch (e) {
+              console.error('dishCash 渲染失败:', e, dishCashData)
+            }
           });
 
 
           //套餐营收占比分析 /statics/setmealCash
-          axios.get('/statics/setmealCash').then(function (res) {
+          getSetmealCash().then(function (res) {
+            if (!res || res.code !== 1 || !Array.isArray(res.data)) {
+              return
+            }
+            var setmealCashData = vm.normalizePieData(res.data)
             // 基于准备好的dom，初始化echarts实例
             var setmealCash = echarts.init(document.getElementById('setmealCash'));
             // 指定图表的配置项和数据
@@ -165,7 +183,7 @@
                   name: 'Access From',
                   type: 'pie',
                   radius: '50%',
-                  data: res.data,
+                  data: setmealCashData,
                   emphasis: {
                     itemStyle: {
                       shadowBlur: 10,
@@ -178,12 +196,20 @@
             };
 
             // 使用刚指定的配置项和数据显示图表。
-            setmealCash.setOption(setmealCashOption);
+            try {
+              setmealCash.setOption(setmealCashOption);
+            } catch (e) {
+              console.error('setmealCash 渲染失败:', e, setmealCashData)
+            }
           });
 
 
           //菜系销量占比分析 /statics/dishNum
-          axios.get('/statics/dishNum').then(function (res) {
+          getDishNum().then(function (res) {
+            if (!res || res.code !== 1 || !Array.isArray(res.data)) {
+              return
+            }
+            var dishNumData = vm.normalizePieData(res.data)
             // 基于准备好的dom，初始化echarts实例
             var dishNum = echarts.init(document.getElementById('dishNum'));
             // 指定图表的配置项和数据
@@ -220,17 +246,25 @@
                   labelLine: {
                     show: false
                   },
-                  data: res.data
+                  data: dishNumData
                 }
               ]
             };
 
             // 使用刚指定的配置项和数据显示图表。
-            dishNum.setOption(dishNumOption);
+            try {
+              dishNum.setOption(dishNumOption);
+            } catch (e) {
+              console.error('dishNum 渲染失败:', e, dishNumData)
+            }
           });
 
           //套餐销量占比分析 /statics/setmealNum
-          axios.get('/statics/setmealNum').then(function (res) {
+          getSetmealNum().then(function (res) {
+            if (!res || res.code !== 1 || !Array.isArray(res.data)) {
+              return
+            }
+            var setmealNumData = vm.normalizePieData(res.data)
             // 基于准备好的dom，初始化echarts实例
             var setmealNum = echarts.init(document.getElementById('setmealNum'));
             // 指定图表的配置项和数据
@@ -267,47 +301,103 @@
                   labelLine: {
                     show: false
                   },
-                  data: res.data
+                  data: setmealNumData
                 }
               ]
             };
 
             // 使用刚指定的配置项和数据显示图表。
-            setmealNum.setOption(setmealNumOption);
+            try {
+              setmealNum.setOption(setmealNumOption);
+            } catch (e) {
+              console.error('setmealNum 渲染失败:', e, setmealNumData)
+            }
           });
 
           //月营业额趋势图 /statics/cashPerMonth
-          axios.get('/statics/cashPerMonth').then(function (res) {
+          getCashPerMonth().then(function (res) {
+            if (!res || res.code !== 1 || !res.data || !Array.isArray(res.data.month) || !Array.isArray(res.data.price)) {
+              return
+            }
+            var trendData = vm.normalizeTrendData(res.data)
             // 基于准备好的dom，初始化echarts实例
             var cashPerMonth = echarts.init(document.getElementById('cashPerMonth'));
             // 指定图表的配置项和数据
             var cashPerMonthOption =   {
+              title: {
+                text: '近一年营业额趋势'
+              },
+              tooltip: {
+                trigger: 'axis'
+              },
               xAxis: {
                 type: 'category',
-                data: res.data.month
+                data: trendData.month
               },
               yAxis: {
                 type: 'value'
               },
               series: [
                 {
-                  data: res.data.price,
-                  type: 'line'
+                  data: trendData.price,
+                  type: 'line',
+                  smooth: true
                 }
               ]
             };
 
             // 使用刚指定的配置项和数据显示图表。
-            cashPerMonth.setOption(cashPerMonthOption);
+            try {
+              cashPerMonth.setOption(cashPerMonthOption);
+            } catch (e) {
+              console.error('cashPerMonth 渲染失败:', e, trendData)
+            }
           });
 
         },
 
 
         methods: {
-
-
-
+          toNumber(value) {
+            const num = Number(value)
+            if (Number.isNaN(num) || !Number.isFinite(num)) {
+              return 0
+            }
+            return num
+          },
+          normalizePieData(data) {
+            if (!Array.isArray(data)) {
+              return [{ name: '暂无数据', value: 1 }]
+            }
+            const normalized = data
+              .filter(item => item && item.name !== null && item.name !== undefined)
+              .map(item => ({
+                name: String(item.name),
+                value: this.toNumber(item.value)
+              }))
+              .filter(item => item.name.length > 0)
+            if (normalized.length === 0) {
+              return [{ name: '暂无数据', value: 1 }]
+            }
+            return normalized
+          },
+          normalizeTrendData(data) {
+            if (!data || !Array.isArray(data.month) || !Array.isArray(data.price)) {
+              return {
+                month: ['暂无数据'],
+                price: [0]
+              }
+            }
+            const month = data.month.map(item => String(item))
+            const price = data.price.map(item => this.toNumber(item))
+            if (month.length === 0 || price.length === 0) {
+              return {
+                month: ['暂无数据'],
+                price: [0]
+              }
+            }
+            return { month, price }
+          }
         }
       })
     </script>

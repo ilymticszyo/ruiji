@@ -19,4 +19,6 @@ public class OrdersDto extends Orders {
      * 订单明细列表
      */
     private List<OrderDetail> orderDetails;
+
+    private String name;
 }
